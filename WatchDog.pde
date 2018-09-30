@@ -47,12 +47,12 @@ void setup(){
         int l = 5;
         while (!found && l >0)
         {
-          delay(400);
+          delay(1000);
           String inBuffer = myPort.readString();
           println("Waiting for response from device on " + portName);
           l--;
           if (inBuffer != null) {
-            if(inBuffer.indexOf("HELO")>=0)
+            if(inBuffer.indexOf("WATCHDOG")>=0 || inBuffer.indexOf("HELO")>=0)
             {
               MSG = "CONNECTED";
               found = true;
@@ -88,7 +88,7 @@ void setup(){
 }
 void draw(){
   background(0);
-  String inBuffer = myPort.readString();
+  String inBuffer = myPort.readStringUntil(10);
   
   if (inBuffer != null) {
     print(inBuffer);
@@ -171,31 +171,33 @@ void draw(){
       lastTime = millis();
     }
     if (millis() - lastAutoKick > 60 * 1000 & autoKick){
-      myPort.write(65);
+      myPort.write("KICK");
+      //myPort.write("\n");    
       lastAutoKick = millis();
       MSG = "AUTOKICK";
     }
 }
+
 void mouseClicked() {
   if (overKick){
     // Send a capital "A" out the serial port
-    myPort.write(65);
+    myPort.write("KICK");
+    //myPort.write("\n");    
     TIMELEFT = "03:00";
     MSG = "KICK";
   }
   if (overTime){
-    // Send a capital "A" out the serial port
     myPort.write("TIME");
     MSG = "TIME";
   }
   if (overAutoKick){
     if (autoKick){
-      // Send a capital "A" out the serial port
       autoKick = false;
       MSG = "AUTOKICKOFF";
     }else{
-      // Send a capital "A" out the serial port
       autoKick = true;
+      myPort.write("KICK");
+      TIMELEFT = "03:00";
       MSG = "AUTOKICKON";
     }
   }
