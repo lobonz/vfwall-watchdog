@@ -51,7 +51,7 @@ void kick() {
   digitalWrite(RELAY_PIN, HIGH);//HIGH TURNS ON
   digitalWrite(LED_PIN, HIGH);
   //Serial.println("Kick");
-  minsleft();
+  //minsleft();
 }
 
 void minsleft(){

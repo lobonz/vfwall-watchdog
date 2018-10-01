@@ -14,7 +14,7 @@ import java.io.InputStream;
 import java.io.OutputStream; 
 import java.io.IOException; 
 
-public class WatchDog extends PApplet {
+public class Watchdog extends PApplet {
 
 
 String MSG = "Connecting...";
@@ -65,12 +65,12 @@ public void setup(){
         int l = 5;
         while (!found && l >0)
         {
-          delay(400);
+          delay(1000);
           String inBuffer = myPort.readString();
           println("Waiting for response from device on " + portName);
           l--;
           if (inBuffer != null) {
-            if(inBuffer.indexOf("HELO")>=0)
+            if(inBuffer.indexOf("WATCHDOG")>=0 || inBuffer.indexOf("HELO")>=0)
             {
               MSG = "CONNECTED";
               found = true;
@@ -106,7 +106,7 @@ public void setup(){
 }
 public void draw(){
   background(0);
-  String inBuffer = myPort.readString();
+  String inBuffer = myPort.readStringUntil(10);
   
   if (inBuffer != null) {
     print(inBuffer);
@@ -189,31 +189,33 @@ public void draw(){
       lastTime = millis();
     }
     if (millis() - lastAutoKick > 60 * 1000 & autoKick){
-      myPort.write(65);
+      myPort.write("KICK");
+      //myPort.write("\n");    
       lastAutoKick = millis();
       MSG = "AUTOKICK";
     }
 }
+
 public void mouseClicked() {
   if (overKick){
     // Send a capital "A" out the serial port
-    myPort.write(65);
+    myPort.write("KICK");
+    //myPort.write("\n");    
     TIMELEFT = "03:00";
     MSG = "KICK";
   }
   if (overTime){
-    // Send a capital "A" out the serial port
     myPort.write("TIME");
     MSG = "TIME";
   }
   if (overAutoKick){
     if (autoKick){
-      // Send a capital "A" out the serial port
       autoKick = false;
       MSG = "AUTOKICKOFF";
     }else{
-      // Send a capital "A" out the serial port
       autoKick = true;
+      myPort.write("KICK");
+      TIMELEFT = "03:00";
       MSG = "AUTOKICKON";
     }
   }
@@ -221,7 +223,7 @@ public void mouseClicked() {
 }
   public void settings() {  size(300,300); }
   static public void main(String[] passedArgs) {
-    String[] appletArgs = new String[] { "WatchDog" };
+    String[] appletArgs = new String[] { "Watchdog" };
     if (passedArgs != null) {
       PApplet.main(concat(appletArgs, passedArgs));
     } else {
