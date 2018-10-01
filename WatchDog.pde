@@ -48,7 +48,7 @@ void setup(){
         while (!found && l >0)
         {
           delay(1000);
-          String inBuffer = myPort.readString();
+          String inBuffer = myPort.readStringUntil(10);
           println("Waiting for response from device on " + portName);
           l--;
           if (inBuffer != null) {
