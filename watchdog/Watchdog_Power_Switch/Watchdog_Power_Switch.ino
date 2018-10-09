@@ -1,8 +1,12 @@
 //For Sparkfun Pro Micro 5.5V
 const int BAUD_RATE = 9600;
 const long WATCHDOG_TIMEOUT = 180000; // 3 minutes
-const int RELAY_PIN = 21;
-const int LED_PIN = 17;
+const int RELAY_PIN = 7;
+const int RELAY_PIN2 = 8;
+
+const int RELAY_ON = LOW;//redefined for dual relay which is on when low
+const int RELAY_OFF = HIGH;//redefined for dual relay which is on when low
+
 //long next_message = 0;
 String a;
 unsigned long last_kick = millis();
@@ -13,7 +17,9 @@ long second =  1000; // 1000 milliseconds in a second
 void setup() {
   Serial.begin(BAUD_RATE);
   pinMode(RELAY_PIN, OUTPUT);
-  digitalWrite(RELAY_PIN, HIGH);
+  pinMode(RELAY_PIN2, OUTPUT);
+  digitalWrite(RELAY_PIN, RELAY_ON);
+  digitalWrite(RELAY_PIN2, RELAY_ON);
   Serial.println("WATCHDOG");
   //kick();  
 }
@@ -39,17 +45,17 @@ void loop() {
   //  minsleft();
   //}
   
-  if (((millis() - last_kick) >= WATCHDOG_TIMEOUT) && digitalRead(RELAY_PIN) == 1) {
+  if (((millis() - last_kick) >= WATCHDOG_TIMEOUT) && digitalRead(RELAY_PIN) == RELAY_ON) {
     Serial.println("TimedOut");
-    digitalWrite(RELAY_PIN, LOW);//LOW TURNS OFF
-    digitalWrite(LED_PIN, LOW);
+    digitalWrite(RELAY_PIN, RELAY_OFF);//LOW TURNS OFF
+    digitalWrite(RELAY_PIN2, RELAY_OFF);//LOW TURNS OFF
   }
 }
 
 void kick() {
   last_kick = millis();
-  digitalWrite(RELAY_PIN, HIGH);//HIGH TURNS ON
-  digitalWrite(LED_PIN, HIGH);
+  digitalWrite(RELAY_PIN, RELAY_ON);//HIGH TURNS ON
+  digitalWrite(RELAY_PIN2, RELAY_ON);//HIGH TURNS ON
   //Serial.println("Kick");
   //minsleft();
 }
